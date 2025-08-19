@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UAV-T รุ่น ๔ | Daily Schedule Dashboard</title>
-    <link rel="icon" type="image/jpeg" href="https://storage.googleapis.com/project-1-122596853236120443.uc.r.appspot.com/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">
+    <title>Tactical Drone รุ่น 4 | Daily Schedule</title>
+    <link rel="icon" type="image/jpeg" href="https://github.com/TacDrone/TacDrone4/blob/main/drone_logo.png>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Library for converting HTML to an image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -29,10 +29,19 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #718096;
         }
-        /* Style for the notification pop-up */
-        #notification {
+        /* Style for the copy notification */
+        #copyNotification {
             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
         }
+        /* Animation for content fade-in */
+        .content-fade {
+            transition: opacity 0.4s ease-in-out;
+        }
+        /* Summary view styles */
+        .summary-mode .details {
+           display: none;
+        }
+        
         /* Print-friendly styles */
         @media print {
             body {
@@ -48,36 +57,39 @@
                 width: 100%;
                 max-width: 100%;
             }
+            .no-print {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body class="bg-gray-100 p-4 sm:p-6 md:p-8">
 
-    <div id="app-container" class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <header class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">สรุปงานที่ต้องทำประจำวัน</h1>
-                <p class="text-lg text-gray-500 mt-1">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
+                <img src="https://storage.googleapis.com/project-1-122596853236120443.uc.r.appspot.com/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" alt="Logo" class="h-20">
+                <p class="text-lg text-gray-500 mt-2">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
                  <div id="weather" class="p-2 text-center bg-white rounded-lg shadow w-full sm:w-auto">
-                     <div class="text-xs text-gray-500 font-semibold">สภาพอากาศ นครนายก</div>
-                     <div id="weather-content" class="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
-                         <span id="weather-icon">--</span>
-                         <span id="weather-temp">--°C</span>
-                         <span class="text-sm font-medium text-blue-500 flex items-center border-l pl-2 ml-1">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
-                                 <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zM4 9a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm11 1a1 1 0 100-2h-1a1 1 0 100 2h1zM6.343 4.929A1 1 0 017.757 6.343l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM13.657 12.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM4.929 13.657a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM12.243 6.343a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" />
-                             </svg>
-                             <span id="weather-precip">--</span>%
-                         </span>
-                     </div>
-                 </div>
-                 <div id="countdown" class="p-2 text-center bg-indigo-100 rounded-lg shadow w-full sm:w-auto">
-                     <div class="text-xs text-indigo-700 font-semibold">กิจกรรมถัดไปใน</div>
-                     <div id="countdown-timer" class="text-xl font-bold text-indigo-900">--:--:--</div>
-                 </div>
+                    <div class="text-xs text-gray-500 font-semibold">สภาพอากาศ นครนายก</div>
+                    <div id="weather-content" class="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                        <span id="weather-icon">--</span>
+                        <span id="weather-temp">--°C</span>
+                        <span class="text-sm font-medium text-blue-500 flex items-center border-l pl-2 ml-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zM4 9a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm11 1a1 1 0 100-2h-1a1 1 0 100 2h1zM6.343 4.929A1 1 0 017.757 6.343l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM13.657 12.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM4.929 13.657a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM12.243 6.343a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" />
+                            </svg>
+                            <span id="weather-precip">--</span>%
+                        </span>
+                    </div>
+                </div>
+                <div id="countdown" class="p-2 text-center bg-indigo-100 rounded-lg shadow w-full sm:w-auto">
+                    <div class="text-xs text-indigo-700 font-semibold">กิจกรรมถัดไปใน</div>
+                    <div id="countdown-timer" class="text-xl font-bold text-indigo-900">--:--:--</div>
+                </div>
             </div>
         </header>
 
@@ -90,36 +102,34 @@
                 </select>
             </div>
             <!-- Action Buttons -->
-            <div class="flex gap-2 w-full sm:w-auto flex-wrap">
+            <div class="flex gap-2 w-full sm:w-auto">
                  <button id="printButton" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
-                     พิมพ์
-                 </button>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                    พิมพ์
+                </button>
                  <button id="copyTextButton" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
-                     คัดลอก
-                 </button>
-                 <button id="downloadButton" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.293a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                     ดาวน์โหลด
-                 </button>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
+                    คัดลอก
+                </button>
+                <button id="downloadButton" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.293a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    ดาวน์โหลด
+                </button>
             </div>
         </div>
 
 
         <!-- Main Schedule Card -->
-        <div id="scheduleCard" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div id="scheduleCard" class="bg-white rounded-2xl shadow-lg overflow-hidden content-fade opacity-0">
             <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
                 <h2 id="scheduleTitle" class="text-2xl sm:text-3xl font-bold"></h2>
             </div>
-            
+
             <!-- Timeline -->
             <div class="p-6 md:p-8 space-y-8">
                 <!-- Morning Session -->
                 <div id="morningSession">
-                    <div class="flex justify-between items-center mb-4 border-b-2 border-indigo-200 pb-2">
-                        <h3 class="text-2xl font-bold text-gray-800">ภาคเช้า</h3>
-                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-indigo-200 pb-2">ภาคเช้า</h3>
                     <ul id="morningSessionContent" class="space-y-6">
                         <!-- Content will be populated by JavaScript -->
                     </ul>
@@ -127,9 +137,7 @@
 
                 <!-- Afternoon Session -->
                 <div id="afternoonSession">
-                     <div class="flex justify-between items-center mb-4 border-b-2 border-indigo-200 pb-2">
-                        <h3 class="text-2xl font-bold text-gray-800">ภาคบ่ายและค่ำ</h3>
-                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-indigo-200 pb-2">ภาคบ่ายและค่ำ</h3>
                     <ul id="afternoonSessionContent" class="space-y-6">
                         <!-- Content will be populated by JavaScript -->
                     </ul>
@@ -146,197 +154,189 @@
         </div>
     </div>
     
-    <!-- Notification for success/failure -->
-    <div id="notification" class="fixed bottom-5 right-5 bg-gray-900 text-white py-3 px-5 rounded-lg shadow-lg opacity-0 transform translate-y-4">
-      Action complete!
+    <!-- Notification for copy success -->
+    <div id="copyNotification" class="fixed bottom-5 right-5 bg-gray-900 text-white py-3 px-5 rounded-lg shadow-lg opacity-0 transform translate-y-4">
+      คัดลอกข้อความแล้ว!
     </div>
 
+
     <script>
-        let scheduleData = {};
-
-        // --- CORE FUNCTIONS ---
-
-        async function loadScheduleData() {
-            // The URL of the editor page which contains the data
-            const editorUrl = 'https://panda33241-maker.github.io/tacdrone/';
-
-            // --- IMPORTANT NOTE ---
-            // The method below fetches the entire HTML of the editor page and extracts the
-            // schedule data from the script. This is NOT a recommended practice because
-            // it can easily break if the editor page's structure changes.
-            //
-            // THE RECOMMENDED METHOD is to save the schedule data as a separate JSON file
-            // (e.g., scheduleData.json) and provide a direct link to that file.
-            // For example: const dataUrl = 'https://panda33241-maker.github.io/tacdrone/scheduleData.json';
-
-            try {
-                const response = await fetch(editorUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const htmlText = await response.text();
-                
-                // Find the start of the data object
-                const startIndexString = 'const initialScheduleData = ';
-                const startIndex = htmlText.indexOf(startIndexString);
-                if (startIndex === -1) {
-                    throw new Error("Could not find the start of the schedule data in the source HTML.");
-                }
-
-                // Find the end of the data object, which is the closing brace followed by a semicolon
-                const endIndex = htmlText.indexOf('};', startIndex);
-                if (endIndex === -1) {
-                    throw new Error("Could not find the end of the schedule data in the source HTML.");
-                }
-
-                // Extract the object string
-                const objectString = htmlText.substring(startIndex + startIndexString.length, endIndex + 1);
-                
-                // Use the Function constructor to safely parse the JavaScript object literal.
-                // This is safer than eval().
-                const data = new Function(`return ${objectString}`)();
-                
-                scheduleData = data;
-                console.log("Data successfully extracted from:", editorUrl);
-                return true; // Success
-
-            } catch (error) {
-                console.error("Could not fetch or parse schedule data from the editor URL:", error);
-                return false; // Failure
+        // Data for all 14 schedule days.
+        const scheduleData = {
+            '20-08-2568': {
+                title: 'การปฏิบัติประจำวันพุธที่ 20 ส.ค. 68 (DAY 1)',
+                morningHTML: `<li class="flex items-start" data-time-start="08:10" data-time-end="09:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">พิธีเปิดการฝึกอบรม</p><p class="text-base text-gray-500">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="09:00" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0900</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ส่วนประกอบอากาศยานไร้คนขับ (บรรยาย)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ส่วนประกอบต่าง ๆ ของอากาศยานไร้คนขับ</li><li>การตรวจเช็กและซ่อมบำรุงอากาศยานไร้คนขับเบื้องต้น</li><li>การบำรุงรักษาแบตเตอรี่</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ส่วนประกอบอากาศยานไร้คนขับ (การฝึกปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ฝึกการประกอบอากาศยานไร้คนขับ</li><li>ฝึกการตรวจเช็กและซ่อมบำรุงอากาศยานไร้คนขับเบื้องต้น</li><li>ฝึกการบำรุงรักษาแบตเตอรี่</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: ร.อ. อริญชย์, ร.อ. ธนภูมิ</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึก Simulator ที่ กวย. (ติดตั้งและทดสอบระบบควบคุม, การใช้โปรแกรมเบื้องต้น)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: ร.อ. อริญชย์, ร.อ. ธนภูมิ</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึก Simulator ที่ กวย. (ติดตั้งและทดสอบระบบควบคุม, การใช้โปรแกรมเบื้องต้น)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. ทศพล</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">พ.อ. ทศพล, พ.อ. บุญอนันต์, ร.อ. นันท์ปวิช, ร.อ. ทวีชัย, ร.ท.ภานุพงศ์</p></div>`
+            },
+            '21-08-2568': {
+                title: 'การปฏิบัติประจำวันพฤหัสบดีที่ 21 ส.ค. 68 (DAY 2)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:00" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0700</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ขึ้นรถ เดินทางไป กคศ.</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">กฎหมายและระเบียบที่เกี่ยวข้องกับการบิน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ท.หญิง ชัชชนก, พ.ท.หญิง เบญจวรรณ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>กฎหมายการบินอากาศยานไร้คนขับ</li><li>ห้วงอากาศ</li><li>ระเบียบที่เกี่ยวข้องกับอากาศยานไร้คนขับ</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">อุตุนิยมวิทยา</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: ร.อ. สำเริง, ร.อ. ชาญวิทย์</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ผลกระทบของสภาพอากาศต่ออากาศยาน</li><li>การรับข้อมูลและการแปลความพยากรณ์อากาศ</li><li>การประเมินสภาพอากาศในพื้นที่ก่อนการบิน</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ท.หญิง เบญจวรรณ, ร.ท. คณิศร</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึก Simulator ที่ กวย. (ติดตั้งและทดสอบระบบควบคุม, การใช้โปรแกรมเบื้องต้น)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ท.หญิง เบญจวรรณ, ร.ท. คณิศร</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึก Simulator ที่ กวย. (ติดตั้งและทดสอบระบบควบคุม, การใช้โปรแกรมเบื้องต้น)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. พลพัต</p></div>`
+            },
+            '22-08-2568': {
+                title: 'การปฏิบัติประจำวันศุกร์ที่ 22 ส.ค. 68 (DAY 3)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:00" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0700</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ขึ้นรถ เดินทางไป กคศ.</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การนำอากาศยานไร้คนขับไปปฏิบัติการทางทหาร</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: น.อ.ภานุพงศ์</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.ฯ</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การนำอากาศยานไร้คนขับไปปฏิบัติการทางทหาร</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: น.อ.ภานุพงศ์</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.ฯ</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: ร.อ. ทวีชัย, ร.ท. คณิศร</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึก Simulator (RPAS Control and Flight Maneuver) (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: ร.อ. ทวีชัย, ร.ท. คณิศร</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึก Simulator (RPAS Control and Flight Maneuver) (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. กิจจา</p></div>`
+            },
+            '23-08-2568': {
+                title: 'การปฏิบัติประจำวันเสาร์ที่ 23 ส.ค. 68 (DAY 4)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:00" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0700</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ขึ้นรถ เดินทางไป กคศ.</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="10:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">สอบใบอนุญาตผู้บังคับอากาศยานไร้คนขับ</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p></div></li><li class="flex items-start" data-time-start="10:00" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1000</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">นิรภัยการบิน (ทฤษฎี)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ทักษะด้านความปลอดภัยของการบิน</li><li>การบริหารจัดการทรัพยากร ทีมงาน และความพร้อมของร่างกาย</li><li>การรับรู้ การตอบสนอง และภาพลวงตา</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">นิรภัยการบิน (ทฤษฎี)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ภัยคุกคามที่เกี่ยวข้อง</li><li>กฎระเบียบด้านนิรภัยการบิน</li><li>การวิเคราะห์ความเสี่ยง</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ท.หญิง เบญจวรรณ, ร.ท. วิชญ์พล</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึกบินตามวงจรการบิน Circuit pattern (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: กคศ.</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ท.หญิง เบญจวรรณ, ร.ท. วิชญ์พล</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึกบินตามวงจรการบิน Circuit pattern (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ.บุญอนันต์</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">พ.อ. สมพงศ์, พ.อ.หญิง พนมวรรณ, พ.อ.หญิง จิรัชยา, พ.อ.หญิง จิตติมา, พ.อ. สามารถ, ร.ท.หญิง วิลาสินี</p></div>`
+            },
+            '24-08-2568': {
+                title: 'การปฏิบัติประจำวันอาทิตย์ที่ 24 ส.ค. 68 (DAY 5)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">นิรภัยการบิน (ปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">นิรภัยการบิน (ทดสอบ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ทดสอบปฏิบัติเป็นรายบุคคล</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. โยธิน, ร.ท. วิชญ์พล</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึกบินตามวงจรการบิน Circuit pattern (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. โยธิน, ร.ท. วิชญ์พล</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึกบินตามวงจรการบิน Circuit pattern (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. ศักย์ณวรา</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">พ.อ. สมพงศ์, พ.อ.หญิง พนมวรรณ, พ.อ.หญิง จิรัชยา, พ.อ.หญิง จิตติมา, พ.อ.สามารถ, ร.ท.หญิง วิลาสินี</p></div>`
+            },
+            '25-08-2568': {
+                title: 'การปฏิบัติประจำวันจันทร์ที่ 25 ส.ค. 68 (DAY 6)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="10:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ทฤษฎี)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>การบินขึ้นและลงจอด</li><li>การบินขึ้นและลงจอดอย่างปลอดภัย</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="10:00" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1000</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, ร.อ. ธนภูมิ</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> การลงจอดอัตโนมัติและแม่นยำ Precision Landing (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, ร.อ. ธนภูมิ</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> การลงจอดอัตโนมัติและแม่นยำ Precision Landing (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. อภิรักษ์</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">พ.อ. สมพงศ์, พ.อ.หญิง พนมวรรณ, พ.อ.หญิง จิรัชยา, พ.อ.หญิง จิตติมา, พ.อ.สามารถ, ร.ท.หญิง วิลาสินี</p></div>`
+            },
+            '26-08-2568': {
+                title: 'การปฏิบัติประจำวันอังคารที่ 26 ส.ค. 68 (DAY 7)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="10:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ทฤษฎี)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>การบินสูง การบินต่ำ การบินทำแผนที่ภูมิประเทศ การบินทางยุทธวิธี</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="10:00" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1000</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน (ปฏิบัติ)</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, ร.อ. อริญชย์</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึกปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน), มอบหมายภารกิจเพื่อฝึกบินด้วยตนเอง (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, ร.อ. อริญชย์</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึกปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน), มอบหมายภารกิจเพื่อฝึกบินด้วยตนเอง (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. เมธี</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">พ.อ. สมพงศ์, พ.อ.หญิง พนมวรรณ, พ.อ.หญิง จิรัชยา, พ.อ.หญิง จิตติมา, พ.อ.สามารถ, ร.ท.หญิง วิลาสินี</p></div>`
+            },
+            '27-08-2568': {
+                title: 'การปฏิบัติประจำวันพุธที่ 27 ส.ค. 68 (DAY 8)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ, ครูโดรน รร.จปร.</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ชุดที่ ๑: การบินอากาศยานไร้คนขับแบบ FPV kamikaze และ การบินตรวจการณ์</li><li>ชุดที่ ๒: การบินทิ้งวัตถุ</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ, ครูโดรน รร.จปร.</p><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, พ.ต.โยธิน</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> ฝึกปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน), มอบหมายภารกิจเพื่อฝึกบินด้วยตนเอง (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. ธวัชชัย, พ.ต. โยธิน</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> ฝึกปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน), มอบหมายภารกิจเพื่อฝึกบินด้วยตนเอง (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. ศักย์ณวรา</p></div>`
+            },
+            '28-08-2568': {
+                title: 'การปฏิบัติประจำวันพฤหัสบดีที่ 28 ส.ค. 68 (DAY 9)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ, ครูโดรน รร.จปร.</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ชุดที่ ๑: การบินทิ้งวัตถุ</li><li>ชุดที่ ๒: การบินอากาศยานไร้คนขับแบบ FPV และ kamikaze และการบินตรวจการณ์</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกบิน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ, ครูโดรน รร.จปร.</p><p class="text-base text-gray-500 mt-1">สถานที่: สนามฟุตบอล พัน.ร.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. โยธิน, ร.อ. ทวีชัย</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-blue-700">ชุด A:</span> การลงจอดอัตโนมัติ Precision Landing (๒ เที่ยวบิน/คน), การปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-purple-700">ชุด B:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-amber-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow bg-gray-50 p-4 rounded-lg"><p class="font-semibold text-gray-800 text-lg">ฝึก Drone Simulator / ภารกิจส่วนตัว</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: พ.ต. โยธิน, ร.อ. ทวีชัย</p><div class="details mt-2 space-y-2 text-base"><p><span class="font-bold text-purple-700">ชุด B:</span> การลงจอดอัตโนมัติ Precision Landing (๒ เที่ยวบิน/คน), การปฏิบัติในกรณีฉุกเฉิน Emergency Training (๒ เที่ยวบิน/คน)</p><p><span class="font-bold text-blue-700">ชุด A:</span> ภารกิจส่วนตัว</p></div></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. กิจจา</p></div>`
+            },
+            '29-08-2568': {
+                title: 'การปฏิบัติประจำวันศุกร์ที่ 29 ส.ค. 68 (DAY 10)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:40"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:40" data-time-end="07:55"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0740</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รถรับเดินทางไป หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">Anti Drone</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ยุทธวิธีในการใช้ Anti Drone</li><li>การใช้ Drone Kamikaze</li><li>การกำบังซ่อนพรางและป้องกันจากการโจมตี Drone</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.สกศ.รร.จปร.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ฝึกบิน: ทำแผนที่ 3D</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ฝึกบิน: การบินตรวจการณ์โดยใช้กล้องความร้อน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: กคศ.สกศ.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ฝึกบิน: การบินตรวจการณ์โดยใช้กล้องความร้อน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. เรืองศักดิ์</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย, พ.อ.หญิง จิรัชยา</p></div>`
+            },
+            '30-08-2568': {
+                title: 'การปฏิบัติประจำวันเสาร์ที่ 30 ส.ค. 68 (DAY 11)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ทำภารกิจส่วนตัว</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="19:00" data-time-end="21:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1900</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. พลพัต</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย</p></div>`
+            },
+            '31-08-2568': {
+                title: 'การปฏิบัติประจำวันอาทิตย์ที่ 31 ส.ค. 68 (DAY 12)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ทำภารกิจส่วนตัว</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. ทศพล</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย</p></div>`
+            },
+            '01-09-2568': {
+                title: 'การปฏิบัติประจำวันจันทร์ที่ 1 ก.ย. 68 (DAY 13)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:00" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0700</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ขึ้นรถ เดินทางไป กคศ.</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: กคศ.สกศ.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: กคศ.สกศ.รร.จปร.</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ส่วนประกอบของโดรน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ฝึกประกอบโดรน</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: กคศ.สกศ.รร.จปร.</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ส่วนประกอบของโดรน</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2"><li>ทดสอบการบินหลังจากประกอบโดรน</li></ul><p class="text-base text-gray-500 mt-1">สถานที่: ห้องเรียน ๑๐๑ กคศ.</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. บุญอนันต์</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย</p></div>`
+            },
+            '02-09-2568': {
+                title: 'การปฏิบัติประจำวันอังคารที่ 2 ก.ย. 68 (DAY 14)',
+                morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:40"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:40" data-time-end="07:55"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0740</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รถรับจาก พัน.รร.จปร. ไป หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="10:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ผู้รับการฝึก กล่าวถึงผลที่ได้รับจากการฝึก</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="10:00" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1000</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">พิธีปิดการฝึก</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: หอประชุม สกศ.</p></div></li><li class="flex items-start" data-time-start="12:15" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1215</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="14:00"><div class="bg-red-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ส่งตัวกลับหน่วย</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. เรืองศักดิ์</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย</p></div>`
             }
-        }
+        };
 
+
+        // Function to update the schedule display based on the selected date
         function updateSchedule(selectedDate) {
             const data = scheduleData[selectedDate];
             if (!data) {
                 console.error("No data found for date:", selectedDate);
                 return;
             };
-            
-            document.getElementById('scheduleTitle').textContent = data.title;
-            document.getElementById('morningSessionContent').innerHTML = (data.morning || []).map(generateScheduleItemHTML).join('');
-            document.getElementById('afternoonSessionContent').innerHTML = (data.afternoon || []).map(generateScheduleItemHTML).join('');
-            document.getElementById('personnelContent').innerHTML = (data.personnel || []).map(generatePersonnelHTML).join('');
-            
-            updateTimeSensitiveUI();
+            const scheduleCard = document.getElementById('scheduleCard');
+            scheduleCard.classList.remove('opacity-100');
+            scheduleCard.classList.add('opacity-0');
+
+            setTimeout(() => {
+                document.getElementById('scheduleTitle').textContent = data.title;
+                document.getElementById('morningSessionContent').innerHTML = data.morningHTML;
+                document.getElementById('afternoonSessionContent').innerHTML = data.afternoonHTML;
+                document.getElementById('personnelContent').innerHTML = data.personnelHTML;
+                updateTimeSensitiveUI();
+                scheduleCard.classList.remove('opacity-0');
+                scheduleCard.classList.add('opacity-100');
+            }, 400);
         }
         
-        // --- HTML GENERATION ---
-
-        function generateScheduleItemHTML(item) {
-            let timeBgColor = 'bg-blue-500'; // Default
-            if (item.title.includes('อาหาร')) timeBgColor = 'bg-emerald-500';
-            if (item.title.includes('Simulator') || item.title.includes('ภารกิจส่วนตัว')) timeBgColor = 'bg-amber-500';
-            if (item.title.includes('ตรวจสอบยอด') || item.title.includes('เดินทาง')) timeBgColor = 'bg-slate-500';
-            if (item.title.includes('ส่งตัวกลับ')) timeBgColor = 'bg-red-500';
-
-            const detailsHTML = item.details && item.details.length > 0
-                ? `<ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2">${item.details.map(d => `<li>${d}</li>`).join('')}</ul>`
-                : '';
-            
-            const instructorHTML = item.instructor ? `<p class="text-base text-indigo-600 font-medium mt-1">${item.instructor}</p>` : '';
-            const locationHTML = item.location ? `<p class="text-base text-gray-500 mt-1">${item.location}</p>` : '';
-
-            return `
-                <li class="flex items-start" data-time-start="${item.startTime.replace(':', '')}" data-time-end="${item.endTime.replace(':', '')}">
-                    <div class="${timeBgColor} grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">${item.startTime}</div>
-                    <div class="flex-grow">
-                        <p class="font-semibold text-gray-800 text-lg">${item.title}</p>
-                        ${instructorHTML}
-                        ${detailsHTML}
-                        ${locationHTML}
-                    </div>
-                </li>
-            `;
-        }
-
-        function generatePersonnelHTML(person) {
-            return `
-                <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <h4 class="font-bold text-gray-800 text-lg">${person.role}</h4>
-                    <p class="text-gray-600 text-base">${person.names}</p>
-                </div>`;
-        }
-        
-        // --- UI & NOTIFICATIONS ---
-
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
+        function showNotification(message) {
+            const notification = document.getElementById('copyNotification');
             notification.textContent = message;
-            notification.classList.toggle('bg-red-600', isError);
-            notification.classList.toggle('bg-gray-900', !isError);
             notification.classList.remove('opacity-0', 'translate-y-4');
             notification.classList.add('opacity-100', 'translate-y-0');
             setTimeout(() => {
                 notification.classList.remove('opacity-100', 'translate-y-0');
                 notification.classList.add('opacity-0', 'translate-y-4');
-            }, 2500);
+            }, 2000);
+        }
+
+        function generateTextFromHtml(htmlString) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+            let text = '';
+
+            tempDiv.querySelectorAll('li.flex').forEach(item => {
+                const time = item.querySelector('div.shrink-0')?.innerText || '';
+                const title = item.querySelector('p.font-semibold')?.innerText || '';
+                const instructor = item.querySelector('p.text-indigo-600')?.innerText || '';
+                const location = item.querySelector('p.text-base.text-gray-500')?.innerText || '';
+                
+                text += `${time}: ${title}\n`;
+                if (instructor) text += `${instructor}\n`;
+                
+                 item.querySelectorAll('div.mt-2 > p').forEach(group => {
+                    text += `  ${group.innerText.replace(': ',':\n    ')}\n`;
+                });
+
+                if (location) text += `${location}\n`;
+                text += '\n';
+            });
+
+            return text;
         }
         
-        function updateTimeSensitiveUI() {
-            const now = new Date();
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            const scheduleItems = document.querySelectorAll('#scheduleCard li[data-time-start]');
-            let nextActivity = null;
-
-            scheduleItems.forEach(item => {
-                const startStr = item.dataset.timeStart;
-                const endStr = item.dataset.timeEnd;
-                const startTime = parseInt(startStr.substring(0, 2)) * 60 + parseInt(startStr.substring(2, 4));
-                const endTime = parseInt(endStr.substring(0, 2)) * 60 + parseInt(endStr.substring(2, 4));
-
-                item.classList.remove('ring-2', 'ring-yellow-400', 'rounded-lg');
-                if (currentMinutes >= startTime && currentMinutes < endTime) {
-                    item.classList.add('ring-2', 'ring-yellow-400', 'rounded-lg');
-                }
-                
-                if (startTime > currentMinutes && !nextActivity) {
-                    nextActivity = { time: startTime };
+        function generatePersonnelText(htmlString) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+            let text = '';
+            
+            tempDiv.querySelectorAll('div.bg-white').forEach(person => {
+                const role = person.querySelector('h4')?.innerText || '';
+                const names = person.querySelector('p')?.innerText || '';
+                if(role && names) {
+                    text += `${role}: ${names}\n`;
                 }
             });
-            
-            const countdownTimerEl = document.getElementById('countdown-timer');
-            if (nextActivity) {
-                const diffTotalSeconds = (nextActivity.time * 60) - (currentMinutes * 60 + now.getSeconds());
-                const hours = Math.floor(diffTotalSeconds / 3600);
-                const minutes = Math.floor((diffTotalSeconds % 3600) / 60);
-                const seconds = diffTotalSeconds % 60;
-                countdownTimerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            } else {
-                countdownTimerEl.textContent = 'สิ้นสุด';
-            }
+            return text;
         }
-        
-        // --- COPY & DOWNLOAD ---
-        
+
         function copyScheduleAsText() {
             const selectedDate = document.getElementById('dateSelector').value;
             const data = scheduleData[selectedDate];
             if (!data) return;
 
-            const generateTextFromItems = (items) => {
-                let text = '';
-                items.forEach(item => {
-                    text += `${item.startTime}: ${item.title}\n`;
-                    if (item.instructor) text += `${item.instructor}\n`;
-                    item.details.forEach(detail => {
-                        const cleanDetail = detail.replace(/<[^>]*>?/gm, '');
-                        text += `  - ${cleanDetail}\n`;
-                    });
-                    if (item.location) text += `${item.location}\n\n`;
-                });
-                return text;
-            };
-
             let fullText = `*${data.title}*\n\n`;
             fullText += "*--- ภาคเช้า ---*\n";
-            fullText += generateTextFromItems(data.morning);
+            fullText += generateTextFromHtml(data.morningHTML);
+            
             fullText += "*--- ภาคบ่ายและค่ำ ---*\n";
-            fullText += generateTextFromItems(data.afternoon);
+            fullText += generateTextFromHtml(data.afternoonHTML);
+            
             fullText += "*--- ผู้เกี่ยวข้อง ---*\n";
-            data.personnel.forEach(p => {
-                fullText += `${p.role}: ${p.names}\n`;
-            });
+            fullText += generatePersonnelText(data.personnelHTML);
 
             const textArea = document.createElement("textarea");
             textArea.value = fullText.trim();
@@ -347,7 +347,7 @@
                 showNotification('คัดลอกข้อความแล้ว!');
             } catch (err) {
                 console.error('Failed to copy text: ', err);
-                showNotification('คัดลอกไม่สำเร็จ', true);
+                showNotification('คัดลอกไม่สำเร็จ');
             }
             document.body.removeChild(textArea);
         }
@@ -355,16 +355,17 @@
         function downloadScheduleAsImage() {
             const scheduleCard = document.getElementById('scheduleCard');
             const selectedDate = document.getElementById('dateSelector').value;
-            
             const originalStyle = scheduleCard.style.cssText;
-            scheduleCard.style.width = '800px';
+
+            scheduleCard.style.width = '450px'; 
+            scheduleCard.style.height = 'auto';
             scheduleCard.style.borderRadius = '0';
             scheduleCard.style.boxShadow = 'none';
 
-            html2canvas(scheduleCard, { 
-                scale: 2, 
-                useCORS: true,
+            html2canvas(scheduleCard, {
+                scale: 3, 
                 backgroundColor: '#ffffff',
+                useCORS: true,
                 windowWidth: scheduleCard.scrollWidth,
                 windowHeight: scheduleCard.scrollHeight
             }).then(canvas => {
@@ -373,15 +374,67 @@
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 scheduleCard.style.cssText = originalStyle;
-            }).catch(err => {
-                console.error("html2canvas failed:", err);
-                showNotification("Failed to create image.", true);
-                scheduleCard.style.cssText = originalStyle;
             });
         }
         
-        // --- WEATHER ---
+        function updateTimeSensitiveUI() {
+            const now = new Date();
+            // const now = new Date('2025-08-20T17:00:00'); // For testing
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const scheduleItems = document.querySelectorAll('#scheduleCard li[data-time-start]');
+            let nextActivity = null;
+            let totalDuration = 0;
+            let completedDuration = 0;
+
+            scheduleItems.forEach(item => {
+                const [startH, startM] = item.dataset.timeStart.split(':').map(Number);
+                const [endH, endM] = item.dataset.timeEnd.split(':').map(Number);
+                const startTime = startH * 60 + startM;
+                const endTime = endH * 60 + endM;
+                const duration = endTime - startTime;
+                totalDuration += duration;
+
+                if (currentTime >= endTime) {
+                    completedDuration += duration;
+                } else if (currentTime > startTime && currentTime < endTime) {
+                    completedDuration += (currentTime - startTime);
+                }
+
+                item.classList.remove('ring-2', 'ring-yellow-400', 'rounded-lg');
+                if (currentTime >= startTime && currentTime < endTime) {
+                    item.classList.add('ring-2', 'ring-yellow-400', 'rounded-lg');
+                }
+                
+                if (startTime > currentTime && !nextActivity) {
+                    nextActivity = { element: item, time: startTime };
+                }
+            });
+            
+            // Countdown
+            const countdownTimerEl = document.getElementById('countdown-timer');
+            if (nextActivity) {
+                const diffMinutes = nextActivity.time - currentTime;
+                const hours = Math.floor(diffMinutes / 60);
+                const minutes = Math.floor(diffMinutes % 60);
+                const seconds = 60 - now.getSeconds();
+                countdownTimerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                 countdownTimerEl.textContent = 'สิ้นสุด';
+            }
+        }
         
+        function getWeatherIcon(code) {
+            const icons = {
+                0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️',
+                51: '🌧️', 53: '🌧️', 55: '🌧️', 56: '🌨️', 57: '🌨️',
+                61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️',
+                71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️',
+                80: '🌦️', 81: '🌦️', 82: '🌦️', 85: '🌨️', 86: '🌨️',
+                95: '⛈️', 96: '⛈️', 99: '⛈️'
+            };
+            return icons[code] || '🌐';
+        }
+
         async function fetchWeather() {
             const lat = 14.21; // Nakhon Nayok
             const lon = 101.21;
@@ -390,86 +443,54 @@
                 const response = await fetch(url);
                 const data = await response.json();
                 const weather = data.current_weather;
-                const currentHourIndex = new Date().getHours();
-                
-                document.getElementById('weather-icon').textContent = { 0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️', 51: '🌧️', 53: '🌧️', 55: '🌧️', 56: '🌨️', 57: '🌨️', 61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️', 80: '🌦️', 81: '🌦️', 82: '🌦️', 85: '🌨️', 86: '🌨️', 95: '⛈️', 96: '⛈️', 99: '⛈️' }[weather.weathercode] || '🌐';
+                const now = new Date();
+                const currentHourIndex = now.getHours();
+
+                document.getElementById('weather-icon').textContent = getWeatherIcon(weather.weathercode);
                 document.getElementById('weather-temp').textContent = `${Math.round(weather.temperature)}°C`;
-                document.getElementById('weather-precip').textContent = data.hourly.precipitation_probability[currentHourIndex];
+                
+                const precipChance = data.hourly.precipitation_probability[currentHourIndex];
+                document.getElementById('weather-precip').textContent = precipChance;
+
             } catch (error) {
                 console.error("Failed to fetch weather:", error);
                 document.getElementById('weather-content').textContent = 'Error';
             }
         }
-        
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            const appContainer = document.getElementById('app-container');
+
+
+        document.addEventListener('DOMContentLoaded', () => {
             const dateSelector = document.getElementById('dateSelector');
+            const downloadButton = document.getElementById('downloadButton');
+            const copyTextButton = document.getElementById('copyTextButton');
+            const printButton = document.getElementById('printButton');
+            const scheduleCard = document.getElementById('scheduleCard');
             
-            const loadingMessage = document.createElement('div');
-            loadingMessage.className = 'text-center p-8 text-gray-500';
-            loadingMessage.textContent = 'กำลังโหลดข้อมูลตารางเวลา...';
-            appContainer.insertBefore(loadingMessage, dateSelector.parentElement.parentElement);
-
-            const hasData = await loadScheduleData();
-            loadingMessage.remove();
-
-            if (!hasData) {
-                appContainer.innerHTML = `
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
-                        <p class="font-bold">ไม่สามารถโหลดข้อมูลตารางเวลาได้</p>
-                        <p>เกิดข้อผิดพลาดในการดึงข้อมูลจากเซิร์ฟเวอร์ กรุณาตรวจสอบลิงก์ข้อมูลและลองอีกครั้ง</p>
-                    </div>
-                `;
-                return;
-            }
-
+            // Populate Date Selector
             const dates = Object.keys(scheduleData);
-
-            if (!dateSelector || dates.length === 0) {
-                console.error("Date selector not found or no schedule data available.");
-                return;
-            }
-
-            // Populate the dropdown
-            dateSelector.innerHTML = '';
             dates.forEach(dateKey => {
                 const option = document.createElement('option');
                 option.value = dateKey;
-                const data = scheduleData[dateKey];
-                if (data && data.title) {
-                    const dayTitle = data.title.split('(')[0].replace('การปฏิบัติประจำ','').trim();
-                    const dayNumberMatch = data.title.match(/\(DAY \d+\)/);
-                    option.textContent = dayNumberMatch ? `${dayTitle} ${dayNumberMatch[0]}` : dayTitle;
-                } else {
-                    option.textContent = dateKey;
-                }
+                const dayTitle = scheduleData[dateKey].title.split('(')[0].replace('การปฏิบัติประจำ','');
+                const dayNumber = scheduleData[dateKey].title.match(/\(DAY (\d+)\)/)[0];
+                option.textContent = `${dayTitle.trim()} ${dayNumber}`;
                 dateSelector.appendChild(option);
             });
 
-            const getTodayDateString = () => {
-                const today = new Date();
-                const d = String(today.getDate()).padStart(2, '0');
-                const m = String(today.getMonth() + 1).padStart(2, '0');
-                const y = today.getFullYear() + 543;
-                return `${d}-${m}-${y}`;
-            };
+            if (dates.length > 0) {
+                updateSchedule(dates[0]);
+            }
 
-            const todayDateKey = getTodayDateString();
-            const initialDateToLoad = dates.includes(todayDateKey) ? todayDateKey : dates[0];
+            dateSelector.addEventListener('change', (event) => {
+                updateSchedule(event.target.value);
+            });
+
+            downloadButton.addEventListener('click', downloadScheduleAsImage);
+            copyTextButton.addEventListener('click', copyScheduleAsText);
+            printButton.addEventListener('click', () => window.print());
             
-            dateSelector.value = initialDateToLoad;
-            updateSchedule(initialDateToLoad);
-
-            // Attach event listeners
-            dateSelector.addEventListener('change', (event) => updateSchedule(event.target.value));
-            document.getElementById('downloadButton').addEventListener('click', downloadScheduleAsImage);
-            document.getElementById('copyTextButton').addEventListener('click', copyScheduleAsText);
-            document.getElementById('printButton').addEventListener('click', () => window.print());
-
-            // Start timers
             fetchWeather();
-            setInterval(fetchWeather, 1800000);
+            setInterval(fetchWeather, 1800000); // Refresh weather every 30 mins
             setInterval(updateTimeSensitiveUI, 1000);
         });
     </script>
