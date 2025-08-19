@@ -152,23 +152,28 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'Tacdrone4adminphysics';
         let scheduleData = {};
 
         // --- CORE FUNCTIONS ---
 
-        function loadScheduleData() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
-                try {
-                    scheduleData = JSON.parse(savedData);
-                    return true;
-                } catch (e) {
-                    console.error("Error parsing schedule data from localStorage:", e);
-                    return false;
+        async function loadScheduleData() {
+            // --- START: REAL FETCH CODE ---
+            // IMPORTANT: Replace this URL with the actual link to your schedule data JSON file.
+            const dataUrl = 'https://gist.githubusercontent.com/your-username/your-gist-id/raw/schedule-data.json'; // <-- 🔴 CHANGE THIS URL
+
+            try {
+                const response = await fetch(dataUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                scheduleData = await response.json();
+                console.log("Data successfully fetched from:", dataUrl);
+                return true; // Success
+            } catch (error) {
+                console.error("Could not fetch or parse schedule data:", error);
+                return false; // Failure
             }
-            return false;
+            // --- END: REAL FETCH CODE ---
         }
 
         function updateSchedule(selectedDate) {
@@ -326,8 +331,8 @@
             scheduleCard.style.borderRadius = '0';
             scheduleCard.style.boxShadow = 'none';
 
-            html2canvas(scheduleCard, {
-                scale: 2,
+            html2canvas(scheduleCard, { 
+                scale: 2, 
                 useCORS: true,
                 backgroundColor: '#ffffff',
                 windowWidth: scheduleCard.scrollWidth,
@@ -367,20 +372,28 @@
         }
         
         // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const appContainer = document.getElementById('app-container');
-            if (!loadScheduleData()) {
+            const dateSelector = document.getElementById('dateSelector');
+            
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'text-center p-8 text-gray-500';
+            loadingMessage.textContent = 'กำลังโหลดข้อมูลตารางเวลา...';
+            appContainer.insertBefore(loadingMessage, dateSelector.parentElement.parentElement);
+
+            const hasData = await loadScheduleData();
+            loadingMessage.remove();
+
+            if (!hasData) {
                 appContainer.innerHTML = `
-                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg" role="alert">
-                        <p class="font-bold">ไม่พบข้อมูลตารางเวลา</p>
-                        <p>กรุณาไปที่หน้าสำหรับแก้ไขข้อมูลเพื่อตั้งค่าตารางเวลาก่อนใช้งาน Dashboard</p>
-                        <p class="mt-2">คุณสามารถเข้าถึงหน้าแก้ไขได้จากลิงก์ที่ได้รับ หรือกลับไปที่หน้าก่อนหน้าเพื่อใช้งานเวอร์ชันแก้ไข</p>
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                        <p class="font-bold">ไม่สามารถโหลดข้อมูลตารางเวลาได้</p>
+                        <p>เกิดข้อผิดพลาดในการดึงข้อมูลจากเซิร์ฟเวอร์ กรุณาตรวจสอบลิงก์ข้อมูลและลองอีกครั้ง</p>
                     </div>
                 `;
                 return;
             }
 
-            const dateSelector = document.getElementById('dateSelector');
             const dates = Object.keys(scheduleData);
 
             if (!dateSelector || dates.length === 0) {
@@ -433,10 +446,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
