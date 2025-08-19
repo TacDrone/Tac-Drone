@@ -95,29 +95,29 @@
 
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <header class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <img src="logo.png" alt="Logo" class="h-24"> <!-- สามารถปรับขนาดโลโก้ได้ที่นี่ -->
+        <header class="mb-8 flex flex-col items-center gap-4">
+            <div class="text-center">
+                <img src="logo.png" alt="Logo" class="h-24 mx-auto" onerror="this.onerror=null;this.src='https://placehold.co/100x100/e2e8f0/4a5568?text=Logo';">
                 <p class="text-lg mt-2 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center justify-center gap-2 w-full sm:w-auto">
                  <div id="weather" class="p-2 text-center bg-white rounded-lg shadow w-full sm:w-auto">
-                    <div class="text-xs text-gray-500 font-semibold">สภาพอากาศ นครนายก</div>
-                    <div id="weather-content" class="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
-                        <span id="weather-icon">--</span>
-                        <span id="weather-temp">--°C</span>
-                        <span class="text-sm font-medium text-blue-500 flex items-center border-l pl-2 ml-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zM4 9a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm11 1a1 1 0 100-2h-1a1 1 0 100 2h1zM6.343 4.929A1 1 0 017.757 6.343l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM13.657 12.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM4.929 13.657a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM12.243 6.343a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" />
-                            </svg>
-                            <span id="weather-precip">--</span>%
-                        </span>
-                    </div>
-                </div>
-                <div id="countdown" class="p-2 text-center bg-indigo-100 rounded-lg shadow w-full sm:w-auto">
-                    <div class="text-xs text-indigo-700 font-semibold">กิจกรรมถัดไปใน</div>
-                    <div id="countdown-timer" class="text-xl font-bold text-indigo-900">--:--:--</div>
-                </div>
+                     <div class="text-xs text-gray-500 font-semibold">สภาพอากาศ นครนายก</div>
+                     <div id="weather-content" class="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                         <span id="weather-icon">--</span>
+                         <span id="weather-temp">--°C</span>
+                         <span class="text-sm font-medium text-blue-500 flex items-center border-l pl-2 ml-1">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+                               <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zM4 9a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm11 1a1 1 0 100-2h-1a1 1 0 100 2h1zM6.343 4.929A1 1 0 017.757 6.343l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM13.657 12.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM4.929 13.657a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM12.243 6.343a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" />
+                             </svg>
+                             <span id="weather-precip">--</span>%
+                         </span>
+                     </div>
+                 </div>
+                 <div id="countdown" class="p-2 text-center bg-indigo-100 rounded-lg shadow w-full sm:w-auto">
+                     <div class="text-xs text-indigo-700 font-semibold">กิจกรรมถัดไปใน</div>
+                     <div id="countdown-timer" class="text-xl font-bold text-indigo-900">--:--:--</div>
+                 </div>
             </div>
         </header>
 
@@ -132,17 +132,17 @@
             <!-- Action Buttons -->
             <div class="flex gap-2 w-full sm:w-auto">
                  <button id="printButton" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
-                    พิมพ์
-                </button>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                     พิมพ์
+                 </button>
                  <button id="copyTextButton" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
-                    คัดลอก
-                </button>
-                <button id="downloadButton" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.293a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                    ดาวน์โหลด
-                </button>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
+                     คัดลอก
+                 </button>
+                 <button id="downloadButton" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.293a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                     ดาวน์โหลด
+                 </button>
             </div>
         </div>
 
@@ -326,8 +326,8 @@
                 if (instructor) text += `${instructor}\n`;
                 
                  item.querySelectorAll('div.mt-2 > p').forEach(group => {
-                    text += `  ${group.innerText.replace(': ',':\n    ')}\n`;
-                });
+                     text += `  ${group.innerText.replace(': ',':\n    ')}\n`;
+                 });
 
                 if (location) text += `${location}\n`;
                 text += '\n';
@@ -515,3 +515,4 @@
 
 </body>
 </html>
+
