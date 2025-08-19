@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/jpeg" href="logo.png">
-    <title>Tactical Drone รุ่น 4 | Daily Schedule</title>
+    <title>UAV-T รุ่น ๔ | Daily Schedule</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,25 +37,53 @@
         .content-fade {
             transition: opacity 0.4s ease-in-out;
         }
-        /* Summary view styles */
-        .summary-mode .details {
-           display: none;
-        }
         
         /* Print-friendly styles */
         @media print {
             body {
                 padding: 0;
-                margin: 0;
+                margin: 1cm;
+                -webkit-print-color-adjust: exact !important; /* Chrome, Safari */
+                color-adjust: exact !important; /* Firefox */
             }
             header, .action-buttons, #countdown, #weather {
                 display: none !important;
             }
             #scheduleCard {
                 box-shadow: none !important;
-                border: 1px solid #ccc;
+                border: 1px solid #e2e8f0;
                 width: 100%;
                 max-width: 100%;
+                border-radius: 0;
+            }
+            #scheduleCard .p-6, #scheduleCard .md\:p-8 {
+                padding: 1rem;
+            }
+            #scheduleCard h2 {
+                color: white !important;
+                font-size: 1.5rem;
+            }
+            #scheduleCard h3 {
+                font-size: 1.25rem;
+                color: #1f2937;
+                border-color: #c7d2fe;
+            }
+            #scheduleCard li > div:first-child {
+                background-color: #e5e7eb !important;
+                color: #1f2937 !important;
+                padding: 0.5rem;
+                border-radius: 9999px;
+                width: 5rem;
+                height: 2.5rem;
+                display: grid;
+                place-items: center;
+            }
+            #scheduleCard p, #scheduleCard li, #scheduleCard h4 {
+                font-size: 12pt !important;
+                color: #374151 !important;
+            }
+            #scheduleCard .bg-gradient-to-r {
+                background: #4f46e5 !important;
             }
             .no-print {
                 display: none !important;
@@ -69,8 +97,8 @@
         <!-- Header -->
         <header class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-  <img src="logo.png" alt="Logo" class="h-20">               
-                <p class="text-lg text-gray-500 mt-2">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
+                <img src="images/logo.jpg" alt="Logo" class="h-24"> <!-- สามารถปรับขนาดโลโก้ได้ที่นี่ -->
+                <p class="text-lg mt-2 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
                  <div id="weather" class="p-2 text-center bg-white rounded-lg shadow w-full sm:w-auto">
@@ -232,7 +260,7 @@
             '31-08-2568': {
                 title: 'การปฏิบัติประจำวันอาทิตย์ที่ 31 ส.ค. 68 (DAY 12)',
                 morningHTML: `<li class="flex items-start" data-time-start="06:55" data-time-end="07:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0655</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอดหน้าที่พัก</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:10" data-time-end="07:55"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0710</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเช้า</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="07:55" data-time-end="08:10"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0755</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">เข้าแถว เคารพธงชาติ ฟังคำชี้แจง</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="08:10" data-time-end="12:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">0810</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="12:00" data-time-end="13:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1200</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารกลางวัน</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
-                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ทำภารกิจส่วนตัว</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
+                afternoonHTML: `<li class="flex items-start" data-time-start="13:00" data-time-end="16:00"><div class="bg-blue-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1300</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">การฝึกตามสถานการณ์</p><p class="text-base text-indigo-600 font-medium mt-1">วิทยากร: คุณวิเชียร และคณะ, ครูโดรน รร.จปร.</p><p class="text-base text-gray-500 mt-1">สถานที่: ภายใน รร.จปร.</p></div></li><li class="flex items-start" data-time-start="16:00" data-time-end="18:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1600</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ทำภารกิจส่วนตัว</p></div></li><li class="flex items-start" data-time-start="18:00" data-time-end="19:00"><div class="bg-emerald-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">1800</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">รับประทานอาหารเย็น</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li><li class="flex items-start" data-time-start="21:30" data-time-end="22:00"><div class="bg-slate-500 grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">2130</div><div class="flex-grow"><p class="font-semibold text-gray-800 text-lg">ตรวจสอบยอด และสวดมนต์</p><p class="text-base text-gray-500">สถานที่: พัน.ร.รร.จปร. ร้อย ๒</p></div></li>`,
                 personnelHTML: `<div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">นายทหารปกครอง</h4><p class="text-gray-600 text-base">พ.อ. ทศพล</p></div><div class="bg-white p-4 rounded-lg shadow-sm"><h4 class="font-bold text-gray-800 text-lg">ผู้ช่วยวิทยากร</h4><p class="text-gray-600 text-base">ครูโดรน รร.จปร. 36 นาย</p></div>`
             },
             '01-09-2568': {
@@ -383,22 +411,12 @@
             const currentTime = now.getHours() * 60 + now.getMinutes();
             const scheduleItems = document.querySelectorAll('#scheduleCard li[data-time-start]');
             let nextActivity = null;
-            let totalDuration = 0;
-            let completedDuration = 0;
 
             scheduleItems.forEach(item => {
                 const [startH, startM] = item.dataset.timeStart.split(':').map(Number);
                 const [endH, endM] = item.dataset.timeEnd.split(':').map(Number);
                 const startTime = startH * 60 + startM;
                 const endTime = endH * 60 + endM;
-                const duration = endTime - startTime;
-                totalDuration += duration;
-
-                if (currentTime >= endTime) {
-                    completedDuration += duration;
-                } else if (currentTime > startTime && currentTime < endTime) {
-                    completedDuration += (currentTime - startTime);
-                }
 
                 item.classList.remove('ring-2', 'ring-yellow-400', 'rounded-lg');
                 if (currentTime >= startTime && currentTime < endTime) {
