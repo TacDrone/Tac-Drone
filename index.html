@@ -157,23 +157,53 @@
         // --- CORE FUNCTIONS ---
 
         async function loadScheduleData() {
-            // --- START: REAL FETCH CODE ---
-            // IMPORTANT: Replace this URL with the actual link to your schedule data JSON file.
-            const dataUrl = 'https://panda33241-maker.github.io/tacdrone/'; // <-- 🔴 CHANGE THIS URL
+            // The URL of the editor page which contains the data
+            const editorUrl = 'https://panda33241-maker.github.io/tacdrone/';
+
+            // --- IMPORTANT NOTE ---
+            // The method below fetches the entire HTML of the editor page and extracts the
+            // schedule data from the script. This is NOT a recommended practice because
+            // it can easily break if the editor page's structure changes.
+            //
+            // THE RECOMMENDED METHOD is to save the schedule data as a separate JSON file
+            // (e.g., scheduleData.json) and provide a direct link to that file.
+            // For example: const dataUrl = 'https://panda33241-maker.github.io/tacdrone/scheduleData.json';
 
             try {
-                const response = await fetch(dataUrl);
+                const response = await fetch(editorUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                scheduleData = await response.json();
-                console.log("Data successfully fetched from:", dataUrl);
+                const htmlText = await response.text();
+                
+                // Find the start of the data object
+                const startIndexString = 'const initialScheduleData = ';
+                const startIndex = htmlText.indexOf(startIndexString);
+                if (startIndex === -1) {
+                    throw new Error("Could not find the start of the schedule data in the source HTML.");
+                }
+
+                // Find the end of the data object, which is the closing brace followed by a semicolon
+                const endIndex = htmlText.indexOf('};', startIndex);
+                if (endIndex === -1) {
+                    throw new Error("Could not find the end of the schedule data in the source HTML.");
+                }
+
+                // Extract the object string
+                const objectString = htmlText.substring(startIndex + startIndexString.length, endIndex + 1);
+                
+                // Use the Function constructor to safely parse the JavaScript object literal.
+                // This is safer than eval().
+                const data = new Function(`return ${objectString}`)();
+                
+                scheduleData = data;
+                console.log("Data successfully extracted from:", editorUrl);
                 return true; // Success
+
             } catch (error) {
-                console.error("Could not fetch or parse schedule data:", error);
+                console.error("Could not fetch or parse schedule data from the editor URL:", error);
                 return false; // Failure
             }
-            // --- END: REAL FETCH CODE ---
         }
 
         function updateSchedule(selectedDate) {
