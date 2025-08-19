@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAV-T รุ่น ๔ | Daily Schedule Dashboard</title>
+    <link rel="icon" type="image/jpeg" href="https://storage.googleapis.com/project-1-122596853236120443.uc.r.appspot.com/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Library for converting HTML to an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Sarabun', sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0f4f8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a0aec0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+        /* Style for the notification pop-up */
+        #notification {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        /* Print-friendly styles */
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            header, .action-buttons, #countdown, #weather {
+                display: none !important;
+            }
+            #scheduleCard {
+                box-shadow: none !important;
+                border: 1px solid #ccc;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+
+    <div id="app-container" class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">สรุปงานที่ต้องทำประจำวัน</h1>
+                <p class="text-lg text-gray-500 mt-1">หลักสูตรการฝึกอบรมและการบังคับอากาศยานไร้คนขับทางยุทธวิธี รุ่นที่ ๔</p>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                 <div id="weather" class="p-2 text-center bg-white rounded-lg shadow w-full sm:w-auto">
+                     <div class="text-xs text-gray-500 font-semibold">สภาพอากาศ นครนายก</div>
+                     <div id="weather-content" class="text-xl font-bold text-gray-900 flex items-center justify-center gap-2">
+                         <span id="weather-icon">--</span>
+                         <span id="weather-temp">--°C</span>
+                         <span class="text-sm font-medium text-blue-500 flex items-center border-l pl-2 ml-1">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+                                 <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zM4 9a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm11 1a1 1 0 100-2h-1a1 1 0 100 2h1zM6.343 4.929A1 1 0 017.757 6.343l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM13.657 12.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM4.929 13.657a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414l-.707-.707zM12.243 6.343a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707zM10 5a5 5 0 100 10 5 5 0 000-10z" clip-rule="evenodd" />
+                             </svg>
+                             <span id="weather-precip">--</span>%
+                         </span>
+                     </div>
+                 </div>
+                 <div id="countdown" class="p-2 text-center bg-indigo-100 rounded-lg shadow w-full sm:w-auto">
+                     <div class="text-xs text-indigo-700 font-semibold">กิจกรรมถัดไปใน</div>
+                     <div id="countdown-timer" class="text-xl font-bold text-indigo-900">--:--:--</div>
+                 </div>
+            </div>
+        </header>
+
+        <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4 action-buttons">
+            <!-- Date Selector -->
+            <div class="w-full sm:w-auto">
+                <label for="dateSelector" class="block text-sm font-medium text-gray-700 mb-2">เลือกวันที่:</label>
+                <select id="dateSelector" name="dateSelector" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+            <!-- Action Buttons -->
+            <div class="flex gap-2 w-full sm:w-auto flex-wrap">
+                 <button id="printButton" class="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                     พิมพ์
+                 </button>
+                 <button id="copyTextButton" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" /><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" /></svg>
+                     คัดลอก
+                 </button>
+                 <button id="downloadButton" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 9.293a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                     ดาวน์โหลด
+                 </button>
+            </div>
+        </div>
+
+
+        <!-- Main Schedule Card -->
+        <div id="scheduleCard" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6 bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+                <h2 id="scheduleTitle" class="text-2xl sm:text-3xl font-bold"></h2>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="p-6 md:p-8 space-y-8">
+                <!-- Morning Session -->
+                <div id="morningSession">
+                    <div class="flex justify-between items-center mb-4 border-b-2 border-indigo-200 pb-2">
+                        <h3 class="text-2xl font-bold text-gray-800">ภาคเช้า</h3>
+                    </div>
+                    <ul id="morningSessionContent" class="space-y-6">
+                        <!-- Content will be populated by JavaScript -->
+                    </ul>
+                </div>
+
+                <!-- Afternoon Session -->
+                <div id="afternoonSession">
+                     <div class="flex justify-between items-center mb-4 border-b-2 border-indigo-200 pb-2">
+                        <h3 class="text-2xl font-bold text-gray-800">ภาคบ่ายและค่ำ</h3>
+                    </div>
+                    <ul id="afternoonSessionContent" class="space-y-6">
+                        <!-- Content will be populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Personnel Section -->
+            <div class="p-6 md:p-8 bg-gray-50 border-t">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">ผู้เกี่ยวข้อง</h3>
+                <div id="personnelContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification for success/failure -->
+    <div id="notification" class="fixed bottom-5 right-5 bg-gray-900 text-white py-3 px-5 rounded-lg shadow-lg opacity-0 transform translate-y-4">
+      Action complete!
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'Tacdrone4adminphysics';
+        let scheduleData = {};
+
+        // --- CORE FUNCTIONS ---
+
+        function loadScheduleData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    scheduleData = JSON.parse(savedData);
+                    return true;
+                } catch (e) {
+                    console.error("Error parsing schedule data from localStorage:", e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        function updateSchedule(selectedDate) {
+            const data = scheduleData[selectedDate];
+            if (!data) {
+                console.error("No data found for date:", selectedDate);
+                return;
+            };
+            
+            document.getElementById('scheduleTitle').textContent = data.title;
+            document.getElementById('morningSessionContent').innerHTML = (data.morning || []).map(generateScheduleItemHTML).join('');
+            document.getElementById('afternoonSessionContent').innerHTML = (data.afternoon || []).map(generateScheduleItemHTML).join('');
+            document.getElementById('personnelContent').innerHTML = (data.personnel || []).map(generatePersonnelHTML).join('');
+            
+            updateTimeSensitiveUI();
+        }
+        
+        // --- HTML GENERATION ---
+
+        function generateScheduleItemHTML(item) {
+            let timeBgColor = 'bg-blue-500'; // Default
+            if (item.title.includes('อาหาร')) timeBgColor = 'bg-emerald-500';
+            if (item.title.includes('Simulator') || item.title.includes('ภารกิจส่วนตัว')) timeBgColor = 'bg-amber-500';
+            if (item.title.includes('ตรวจสอบยอด') || item.title.includes('เดินทาง')) timeBgColor = 'bg-slate-500';
+            if (item.title.includes('ส่งตัวกลับ')) timeBgColor = 'bg-red-500';
+
+            const detailsHTML = item.details && item.details.length > 0
+                ? `<ul class="details list-disc list-inside text-base text-gray-600 mt-1 pl-2">${item.details.map(d => `<li>${d}</li>`).join('')}</ul>`
+                : '';
+            
+            const instructorHTML = item.instructor ? `<p class="text-base text-indigo-600 font-medium mt-1">${item.instructor}</p>` : '';
+            const locationHTML = item.location ? `<p class="text-base text-gray-500 mt-1">${item.location}</p>` : '';
+
+            return `
+                <li class="flex items-start" data-time-start="${item.startTime.replace(':', '')}" data-time-end="${item.endTime.replace(':', '')}">
+                    <div class="${timeBgColor} grid place-items-center text-white font-bold rounded-full w-20 h-10 mr-4 shrink-0 text-lg">${item.startTime}</div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-gray-800 text-lg">${item.title}</p>
+                        ${instructorHTML}
+                        ${detailsHTML}
+                        ${locationHTML}
+                    </div>
+                </li>
+            `;
+        }
+
+        function generatePersonnelHTML(person) {
+            return `
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-gray-800 text-lg">${person.role}</h4>
+                    <p class="text-gray-600 text-base">${person.names}</p>
+                </div>`;
+        }
+        
+        // --- UI & NOTIFICATIONS ---
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.toggle('bg-red-600', isError);
+            notification.classList.toggle('bg-gray-900', !isError);
+            notification.classList.remove('opacity-0', 'translate-y-4');
+            notification.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                notification.classList.remove('opacity-100', 'translate-y-0');
+                notification.classList.add('opacity-0', 'translate-y-4');
+            }, 2500);
+        }
+        
+        function updateTimeSensitiveUI() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const scheduleItems = document.querySelectorAll('#scheduleCard li[data-time-start]');
+            let nextActivity = null;
+
+            scheduleItems.forEach(item => {
+                const startStr = item.dataset.timeStart;
+                const endStr = item.dataset.timeEnd;
+                const startTime = parseInt(startStr.substring(0, 2)) * 60 + parseInt(startStr.substring(2, 4));
+                const endTime = parseInt(endStr.substring(0, 2)) * 60 + parseInt(endStr.substring(2, 4));
+
+                item.classList.remove('ring-2', 'ring-yellow-400', 'rounded-lg');
+                if (currentMinutes >= startTime && currentMinutes < endTime) {
+                    item.classList.add('ring-2', 'ring-yellow-400', 'rounded-lg');
+                }
+                
+                if (startTime > currentMinutes && !nextActivity) {
+                    nextActivity = { time: startTime };
+                }
+            });
+            
+            const countdownTimerEl = document.getElementById('countdown-timer');
+            if (nextActivity) {
+                const diffTotalSeconds = (nextActivity.time * 60) - (currentMinutes * 60 + now.getSeconds());
+                const hours = Math.floor(diffTotalSeconds / 3600);
+                const minutes = Math.floor((diffTotalSeconds % 3600) / 60);
+                const seconds = diffTotalSeconds % 60;
+                countdownTimerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                countdownTimerEl.textContent = 'สิ้นสุด';
+            }
+        }
+        
+        // --- COPY & DOWNLOAD ---
+        
+        function copyScheduleAsText() {
+            const selectedDate = document.getElementById('dateSelector').value;
+            const data = scheduleData[selectedDate];
+            if (!data) return;
+
+            const generateTextFromItems = (items) => {
+                let text = '';
+                items.forEach(item => {
+                    text += `${item.startTime}: ${item.title}\n`;
+                    if (item.instructor) text += `${item.instructor}\n`;
+                    item.details.forEach(detail => {
+                        const cleanDetail = detail.replace(/<[^>]*>?/gm, '');
+                        text += `  - ${cleanDetail}\n`;
+                    });
+                    if (item.location) text += `${item.location}\n\n`;
+                });
+                return text;
+            };
+
+            let fullText = `*${data.title}*\n\n`;
+            fullText += "*--- ภาคเช้า ---*\n";
+            fullText += generateTextFromItems(data.morning);
+            fullText += "*--- ภาคบ่ายและค่ำ ---*\n";
+            fullText += generateTextFromItems(data.afternoon);
+            fullText += "*--- ผู้เกี่ยวข้อง ---*\n";
+            data.personnel.forEach(p => {
+                fullText += `${p.role}: ${p.names}\n`;
+            });
+
+            const textArea = document.createElement("textarea");
+            textArea.value = fullText.trim();
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showNotification('คัดลอกข้อความแล้ว!');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showNotification('คัดลอกไม่สำเร็จ', true);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function downloadScheduleAsImage() {
+            const scheduleCard = document.getElementById('scheduleCard');
+            const selectedDate = document.getElementById('dateSelector').value;
+            
+            const originalStyle = scheduleCard.style.cssText;
+            scheduleCard.style.width = '800px';
+            scheduleCard.style.borderRadius = '0';
+            scheduleCard.style.boxShadow = 'none';
+
+            html2canvas(scheduleCard, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                windowWidth: scheduleCard.scrollWidth,
+                windowHeight: scheduleCard.scrollHeight
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `schedule-${selectedDate}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                scheduleCard.style.cssText = originalStyle;
+            }).catch(err => {
+                console.error("html2canvas failed:", err);
+                showNotification("Failed to create image.", true);
+                scheduleCard.style.cssText = originalStyle;
+            });
+        }
+        
+        // --- WEATHER ---
+        
+        async function fetchWeather() {
+            const lat = 14.21; // Nakhon Nayok
+            const lon = 101.21;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const weather = data.current_weather;
+                const currentHourIndex = new Date().getHours();
+                
+                document.getElementById('weather-icon').textContent = { 0: '☀️', 1: '🌤️', 2: '⛅️', 3: '☁️', 45: '🌫️', 48: '🌫️', 51: '🌧️', 53: '🌧️', 55: '🌧️', 56: '🌨️', 57: '🌨️', 61: '🌧️', 63: '🌧️', 65: '🌧️', 66: '🌨️', 67: '🌨️', 71: '❄️', 73: '❄️', 75: '❄️', 77: '❄️', 80: '🌦️', 81: '🌦️', 82: '🌦️', 85: '🌨️', 86: '🌨️', 95: '⛈️', 96: '⛈️', 99: '⛈️' }[weather.weathercode] || '🌐';
+                document.getElementById('weather-temp').textContent = `${Math.round(weather.temperature)}°C`;
+                document.getElementById('weather-precip').textContent = data.hourly.precipitation_probability[currentHourIndex];
+            } catch (error) {
+                console.error("Failed to fetch weather:", error);
+                document.getElementById('weather-content').textContent = 'Error';
+            }
+        }
+        
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const appContainer = document.getElementById('app-container');
+            if (!loadScheduleData()) {
+                appContainer.innerHTML = `
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg" role="alert">
+                        <p class="font-bold">ไม่พบข้อมูลตารางเวลา</p>
+                        <p>กรุณาไปที่หน้าสำหรับแก้ไขข้อมูลเพื่อตั้งค่าตารางเวลาก่อนใช้งาน Dashboard</p>
+                        <p class="mt-2">คุณสามารถเข้าถึงหน้าแก้ไขได้จากลิงก์ที่ได้รับ หรือกลับไปที่หน้าก่อนหน้าเพื่อใช้งานเวอร์ชันแก้ไข</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const dateSelector = document.getElementById('dateSelector');
+            const dates = Object.keys(scheduleData);
+
+            if (!dateSelector || dates.length === 0) {
+                console.error("Date selector not found or no schedule data available.");
+                return;
+            }
+
+            // Populate the dropdown
+            dateSelector.innerHTML = '';
+            dates.forEach(dateKey => {
+                const option = document.createElement('option');
+                option.value = dateKey;
+                const data = scheduleData[dateKey];
+                if (data && data.title) {
+                    const dayTitle = data.title.split('(')[0].replace('การปฏิบัติประจำ','').trim();
+                    const dayNumberMatch = data.title.match(/\(DAY \d+\)/);
+                    option.textContent = dayNumberMatch ? `${dayTitle} ${dayNumberMatch[0]}` : dayTitle;
+                } else {
+                    option.textContent = dateKey;
+                }
+                dateSelector.appendChild(option);
+            });
+
+            const getTodayDateString = () => {
+                const today = new Date();
+                const d = String(today.getDate()).padStart(2, '0');
+                const m = String(today.getMonth() + 1).padStart(2, '0');
+                const y = today.getFullYear() + 543;
+                return `${d}-${m}-${y}`;
+            };
+
+            const todayDateKey = getTodayDateString();
+            const initialDateToLoad = dates.includes(todayDateKey) ? todayDateKey : dates[0];
+            
+            dateSelector.value = initialDateToLoad;
+            updateSchedule(initialDateToLoad);
+
+            // Attach event listeners
+            dateSelector.addEventListener('change', (event) => updateSchedule(event.target.value));
+            document.getElementById('downloadButton').addEventListener('click', downloadScheduleAsImage);
+            document.getElementById('copyTextButton').addEventListener('click', copyScheduleAsText);
+            document.getElementById('printButton').addEventListener('click', () => window.print());
+
+            // Start timers
+            fetchWeather();
+            setInterval(fetchWeather, 1800000);
+            setInterval(updateTimeSensitiveUI, 1000);
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
