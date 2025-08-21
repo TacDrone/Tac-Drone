@@ -46,7 +46,7 @@
                 -webkit-print-color-adjust: exact !important; /* Chrome, Safari */
                 color-adjust: exact !important; /* Firefox */
             }
-            header, .action-buttons, #countdown, #weather {
+            header, .action-buttons, #countdown, #weather, #timeline-progress {
                 display: none !important;
             }
             #scheduleCard {
@@ -121,6 +121,19 @@
             </div>
         </header>
 
+
+<!-- Timeline Progress Bar -->
+        <div id="timeline-progress" class="mb-6">
+            <div class="flex justify-between mb-1">
+                <span class="text-base font-medium text-indigo-700">ความคืบหน้าการฝึกอบรม</span>
+                <span id="progress-label" class="text-sm font-medium text-indigo-700">Day 0 / 14</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        
         <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4 action-buttons">
             <!-- Date Selector -->
             <div class="w-full sm:w-auto">
@@ -474,6 +487,44 @@
             console.error("Failed to fetch weather:", error);
             document.getElementById('weather-content').textContent = 'Error';
         }
+    }
+
+
+    function updateTimelineProgress() {
+        const dates = Object.keys(scheduleData);
+        const totalDays = dates.length;
+        const progressBar = document.getElementById('progress-bar');
+        const progressLabel = document.getElementById('progress-label');
+
+        const now = new Date();
+        
+        let passedDays = 0;
+        // Set time to 00:00:00 to compare dates only
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        dates.forEach(dateKey => {
+            const [d, m, y] = dateKey.split('-').map(Number);
+            // Create date object from schedule key (BE to AD)
+            const trainingDate = new Date(y - 543, m - 1, d);
+            if (trainingDate < today) {
+                passedDays++;
+            }
+        });
+        
+        // If today is a training day, count it as in-progress
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const buddhistYear = now.getFullYear() + 543;
+        const todayKey = `${day}-${month}-${buddhistYear}`;
+        if (dates.includes(todayKey)) {
+            passedDays++;
+        }
+
+        const completedDays = Math.max(0, Math.min(passedDays, totalDays));
+        const progressPercentage = (completedDays / totalDays) * 100;
+
+        progressBar.style.width = `${progressPercentage}%`;
+        progressLabel.textContent = `Day ${completedDays} / ${totalDays}`;
     }
 
 
